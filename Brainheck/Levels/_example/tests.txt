@@ -1,1 +1,1 @@
-﻿inputchars; outputchars; startingtape; endtape; startPos; endPos(can be -1 for any pos)
+﻿inputchars; outputchars(can be *); startingtape; endtape(can be *); startPos; endPos(can be *)

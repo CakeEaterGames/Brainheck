@@ -17,6 +17,11 @@ namespace Brainheck
         public bool IsRunning = false;
 
         public List<byte> Input;
+        public int InputPointer = 0;
+
+        public List<byte> Output;
+        public int OutputPointer = 0;
+
         public string OutputString = "";
         
 
@@ -33,6 +38,8 @@ namespace Brainheck
             IsRunning = true;
             Input = input;
             Memory = memory;
+
+            Output = new List<byte>();
         }
 
         public void Iterate()
@@ -78,11 +85,14 @@ namespace Brainheck
                         PC++;
                         break;
                     case '.':
-                        //Console.Write((char)memory[MC]);
+                        Output.Add(Memory[MC]);
+                        OutputString += (char)Memory[MC];
+                        OutputPointer++;
                         PC++;
                         break;
                     case ',':
-                        Memory[MC] = (byte)int.Parse(Console.ReadLine());
+                        Memory[MC] = Input[InputPointer];
+                        InputPointer++;
                         PC++;
                         break;
 

@@ -10,10 +10,15 @@ namespace Brainheck
 {
     class Level
     {
-        public void LoadFromRes(string id)
+        public string ID;
+        public Level(string id)
         {
-            var RawMeta = lib.ResText("Levels." + id + ".meta.txt");
-            var RamTests = lib.ResText("Levels." + id + ".tests.txt");
+            ID = id;
+        }
+        public void LoadFromRes()
+        {
+            var RawMeta = lib.ResText("Levels." + ID + ".meta.txt");
+            var RamTests = lib.ResText("Levels." + ID + ".tests.txt");
 
             var m = RawMeta.Split('\n');
             Name = m[0];
@@ -40,6 +45,7 @@ namespace Brainheck
             CurrentTest = index;
             Memory = new List<byte>(Tests[index].StartingTape);
             Input = new List<byte>(Tests[index].InputChars);
+            ExpectedOutput = new List<byte>(Tests[index].OutputChars);
         }
 
         int TicksReq, CharsReq, MemoryReq;
@@ -59,9 +65,9 @@ namespace Brainheck
 
             public SolutionTest(string inputChars, string outputChars, string startingTape, string endTape, string startPos, string endPos)
             {
-                ToCheckEndTape = outputChars.Contains('*');
-                ToCheckEndOutput = endTape.Contains('*');
-                ToCheckEndPos = endPos.Contains('*');
+                ToCheckEndTape = !outputChars.Contains('*');
+                ToCheckEndOutput = !endTape.Contains('*');
+                ToCheckEndPos = !endPos.Contains('*');
 
                 InputChars = lib.StringToByteList(inputChars, ',');
                 StartingTape = lib.StringToByteList(startingTape, ',');
@@ -90,9 +96,9 @@ namespace Brainheck
         }
 
         string EmptySolution = "#main\n{\n\n}";
-        public void CreateFoulders(string id)
+        public void CreateFoulders()
         {
-            string path = "Soulutions/" + id;
+            string path = "Soulutions/" + ID;
             Directory.CreateDirectory(path);
             if (!File.Exists(path+"/CurrentSolution.txt"))
             {
@@ -102,9 +108,9 @@ namespace Brainheck
                 sw.Close();
             }
         }
-        public void LoadSolutionFromFile(string id)
+        public void LoadSolutionFromFile()
         {
-            string path = "Soulutions/" + id;
+            string path = "Soulutions/" + ID;
             StreamReader sr = new StreamReader(path + "/CurrentSolution.txt");
             var highCode = sr.ReadToEnd();
             sr.Close();
@@ -114,6 +120,7 @@ namespace Brainheck
 
         List<byte> Memory = new List<byte>();
         List<byte> Input = new List<byte>();
+        List<byte> ExpectedOutput = new List<byte>();
         int CellsOnScreen = 19 * 6;
 
         public string Task = "Task text here";
@@ -134,7 +141,9 @@ namespace Brainheck
 
             Console.WriteLine("Test №");
 
-            Console.WriteLine("Input: " + string.Join(", ",Input));
+            Console.WriteLine("Input:  " + string.Join(", ", Input));
+            Console.WriteLine();
+            Console.WriteLine("Output: " + string.Join(", ", ExpectedOutput));
             Console.WriteLine();
 
             string s = new string('-', Console.BufferWidth - 1);
@@ -148,14 +157,19 @@ namespace Brainheck
             {
                 Console.Write("|     ");
             }
-            Console.WriteLine("|");
+
+            if ((Console.BufferWidth - 1) % 6>=1) Console.Write("|");
+            Console.WriteLine();
+ 
 
             cellY = Console.CursorTop - 1;
             for (int i = 0; i < CellsOnScreen; i++)
             {
                 Console.Write("|     ");
             }
-            Console.WriteLine("|");
+
+            if ((Console.BufferWidth - 1) % 6 >= 1) Console.Write("|");
+            Console.WriteLine();
             Console.WriteLine(s);
 
             pointerY = Console.CursorTop;
@@ -296,35 +310,98 @@ namespace Brainheck
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.SetCursorPosition(CodePointer % Console.BufferWidth, CodePointer / Console.BufferWidth + codeY);
                 Console.Write(bf.Code[CodePointer]);
-
+                Console.ResetColor();
 
             }
         }
 
-
-        public void Run()
+        public enum RunSpeed
         {
+            steps,
+            breaks,
+            full
+        }
+        public void Run(RunSpeed sp)
+        {
+            LoadFromRes();
+            SetTest(CurrentTest);
+            LoadSolutionFromFile();
+            DrawLayout();
+
             bf = new Brainfuck();
             bf.Init(Code, Memory, Input);
 
             
             while (bf.IsRunning)
             {
-                Console.ReadKey(true);
                 MemoryPointer = bf.MC;
                 CodePointer = bf.PC;
 
+                //TODO: check if needed to rewrite
                 RewriteCells();
                 RewriteIndexes();
                 RewritePointer();
                 RewriteCodePos();
 
                 bf.Iterate();
+                if (sp==RunSpeed.steps)
+                {
+                    var k = Console.ReadKey(true);
+                    if (k.Key == ConsoleKey.Enter)
+                    {
+                        sp = RunSpeed.breaks;
+                    }
+                    if (k.Key == ConsoleKey.Escape)
+                    {
+                        break;
+                    }
+                }
             }
-         
+            MemoryPointer = 0;
+            CodePointer = 0;
 
+            Console.Clear();
+            SetTest(CurrentTest);
+            LoadSolutionFromFile();
+            DrawLayout();
         }
 
+        public void Loop()
+        {
+            Console.ResetColor();
+            LoadFromRes();
+            CreateFoulders();
+            SetTest(0);
+            LoadSolutionFromFile();
+            DrawLayout();
+
+            while (true)
+            {
+                bool repeat = true;
+                bool toBreak = false;
+                while (repeat)
+                {
+                    repeat = false;
+                    ConsoleKeyInfo k = Console.ReadKey(true);
+                    switch (k.Key)
+                    {
+                        case ConsoleKey.Escape:
+                            toBreak = true;
+                            break;
+                        case ConsoleKey.Enter:
+                            Run(RunSpeed.breaks);
+                            break;
+                        case ConsoleKey.Spacebar:
+                            Run(RunSpeed.steps);
+                            break;
+                        default:
+                            repeat = true;
+                            break;
+                    }
+                }
+                if (toBreak) break;
+            }
+        }
 
     }
 
@@ -334,11 +411,12 @@ namespace Brainheck
 
 /* 
  TODO
- Load code from file
- Load level data from file
+
+
  Errors
  Debug (!)
  Sounds
- Load level tests
+
  Level input/output
+ Veryfy the tests
  */

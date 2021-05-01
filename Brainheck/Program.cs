@@ -20,14 +20,10 @@ namespace Brainheck
 
     */
 
-            Level l = new Level();
-            l.LoadFromRes("tut1");
-            l.CreateFoulders("tut1");
-            l.SetTest(0);
-            l.LoadSolutionFromFile("tut1");
-            l.DrawLayout();
-            l.Run();
-            Console.ReadLine();
+            Level l = new Level("tut1");
+          
+            l.Loop();
+          //  Console.ReadLine();
         }
     }
 }
