@@ -1,0 +1,2 @@
+﻿* = anything
+inputchars; outputchars; startingtape; endtape; startPos; entPos

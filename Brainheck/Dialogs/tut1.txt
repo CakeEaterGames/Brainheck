@@ -1,0 +1,13 @@
+﻿I will now explain to you the basics
+You will write programs that operate on an infinite strip of cells
+The eye (^ symbol) looks at a currently selected cell
+A + command adds 1 to the value in the selected cell
+A - command subtracts 1 form the value in the selected cell
+For example
+Program "+++++" adds 5 to the value in the selected cell
+And Program "+++---" adds 3 and subtracts 3, basically it does nothing
+To write a program, open a file "CurrentTask.txt" and start writing code between the curly brackets {}
+But FOR THE LOVE OF SATAN, don't use the default notepad
+Please download Notepad++ or whatever
+Your first task is:
+Write a program that adds 6 to the selected cell

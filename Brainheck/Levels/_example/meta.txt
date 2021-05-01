@@ -1,0 +1,5 @@
+﻿Tittle
+Task
+Ticks req
+Chars req
+Memory req
