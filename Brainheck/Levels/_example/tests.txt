@@ -1,2 +1,1 @@
-﻿* = anything
-inputchars; outputchars; startingtape; endtape; startPos; entPos
+﻿inputchars; outputchars; startingtape; endtape; startPos; endPos(can be -1 for any pos)

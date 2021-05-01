@@ -135,5 +135,19 @@ namespace Brainheck
             }
             throw new Exception("No such text file in res");
         }
+
+        public static List<byte> StringToByteList(string S, char sep)
+        {
+            List<byte> res = new List<byte>();
+            var parts = S.Split(sep);
+            foreach (var s in parts)
+            {
+                if (s.Trim().Length!=0)
+                {
+                    res.Add(byte.Parse(s.Trim()));
+                }
+            }
+            return res;
+        }
     }
 }

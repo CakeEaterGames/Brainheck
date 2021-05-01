@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -22,22 +23,101 @@ namespace Brainheck
             CharsReq = int.Parse(m[3]);
             MemoryReq = int.Parse(m[4]);
 
-            var t = RamTests.Split('\n');
+            var tests = RamTests.Split('\n');
+
+            foreach (var t in tests)
+            {
+                var r = t.Split(';');
+                SolutionTest lt = new SolutionTest(r[0], r[1], r[2], r[3], r[4], r[5]);
+                Tests.Add(lt);
+            }
 
         }
+        public List<SolutionTest> Tests = new List<SolutionTest>();
+        public int CurrentTest = 0;
+        public void SetTest(int index)
+        {
+            CurrentTest = index;
+            Memory = new List<byte>(Tests[index].StartingTape);
+            Input = new List<byte>(Tests[index].InputChars);
+        }
+
         int TicksReq, CharsReq, MemoryReq;
 
-        struct LevelTest
+        public struct SolutionTest
         {
+            public List<byte> InputChars;
+            public List<byte> OutputChars;
+            public List<byte> StartingTape;
+            public List<byte> EndTape;
+            public int StartPos;
+            public int EndPos;
 
+            public bool ToCheckEndTape;
+            public bool ToCheckEndOutput;
+            public bool ToCheckEndPos;
+
+            public SolutionTest(string inputChars, string outputChars, string startingTape, string endTape, string startPos, string endPos)
+            {
+                ToCheckEndTape = outputChars.Contains('*');
+                ToCheckEndOutput = endTape.Contains('*');
+                ToCheckEndPos = endPos.Contains('*');
+
+                InputChars = lib.StringToByteList(inputChars, ',');
+                StartingTape = lib.StringToByteList(startingTape, ',');
+                StartPos = int.Parse(startPos);
+
+                EndTape = null;
+                OutputChars = null;
+                EndPos = 0;
+
+                if (ToCheckEndTape)
+                {
+                    EndTape = lib.StringToByteList(endTape, ',');
+                }
+                if (ToCheckEndOutput)
+                {
+                    OutputChars = lib.StringToByteList(outputChars, ',');
+                }
+                if (ToCheckEndPos)
+                {
+                    EndPos = int.Parse(endPos);
+                }            
+            }
+         
+
+
+        }
+
+        string EmptySolution = "#main\n{\n\n}";
+        public void CreateFoulders(string id)
+        {
+            string path = "Soulutions/" + id;
+            Directory.CreateDirectory(path);
+            if (!File.Exists(path+"/CurrentSolution.txt"))
+            {
+                StreamWriter sw = new StreamWriter(path + "/CurrentSolution.txt");
+                sw.Write(EmptySolution);
+                sw.Flush();
+                sw.Close();
+            }
+        }
+        public void LoadSolutionFromFile(string id)
+        {
+            string path = "Soulutions/" + id;
+            StreamReader sr = new StreamReader(path + "/CurrentSolution.txt");
+            var highCode = sr.ReadToEnd();
+            sr.Close();
+            Compiler c = new Compiler();
+            Code = c.Compile(highCode);
         }
 
         List<byte> Memory = new List<byte>();
+        List<byte> Input = new List<byte>();
         int CellsOnScreen = 19 * 6;
 
         public string Task = "Task text here";
         public string Name = "Level name";
-        public string Input = "";
 
         int indexY, pointerY, cellY, codeY;
 
@@ -54,7 +134,7 @@ namespace Brainheck
 
             Console.WriteLine("Test №");
 
-            Console.WriteLine("Input: " + Input);
+            Console.WriteLine("Input: " + string.Join(", ",Input));
             Console.WriteLine();
 
             string s = new string('-', Console.BufferWidth - 1);
@@ -225,14 +305,11 @@ namespace Brainheck
         public void Run()
         {
             bf = new Brainfuck();
-            bf.Init(Code, Memory);
+            bf.Init(Code, Memory, Input);
 
-
-
-
-            while (true)
+            
+            while (bf.IsRunning)
             {
-
                 Console.ReadKey(true);
                 MemoryPointer = bf.MC;
                 CodePointer = bf.PC;
@@ -243,11 +320,8 @@ namespace Brainheck
                 RewriteCodePos();
 
                 bf.Iterate();
-
-
-
             }
-
+         
 
         }
 

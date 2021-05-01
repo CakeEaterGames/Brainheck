@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Brainfuck.cs" />
+    <Compile Include="Compiler.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="LevelUtils.cs" />
     <Compile Include="lib.cs" />

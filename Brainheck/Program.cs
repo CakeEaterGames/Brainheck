@@ -21,10 +21,10 @@ namespace Brainheck
     */
 
             Level l = new Level();
-            l.Name = "Tutirial 1";
-            l.Task = "Write a program that adds 6 to the selected cell";
-            l.Code = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.> +.++++++ +..++ +.> ++.<< +++++++++++++++.>.++ +.------.--------.> +.>.".Replace(" "," ");
-
+            l.LoadFromRes("tut1");
+            l.CreateFoulders("tut1");
+            l.SetTest(0);
+            l.LoadSolutionFromFile("tut1");
             l.DrawLayout();
             l.Run();
             Console.ReadLine();

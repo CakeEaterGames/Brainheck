@@ -14,20 +14,24 @@ namespace Brainheck
         public int MC = 0;
         public int PC = 0;
         public int Chain = 0;
+        public bool IsRunning = false;
+
+        public List<byte> Input;
+        public string OutputString = "";
+        
 
         public Brainfuck()
         {
 
 
         }
-        public void Init(string code)
+      
+        public void Init(string code, List<byte> memory, List<byte> input)
         {
             Code = code.ToCharArray();
-        }
-        public void Init(string code, List<byte> memory)
-        {
-            Code = code.ToCharArray();
- 
+
+            IsRunning = true;
+            Input = input;
             Memory = memory;
         }
 
@@ -143,8 +147,13 @@ namespace Brainheck
                         break;
 
                 }
- 
+
             }
+            else
+            {
+                IsRunning = false;
+            }
+        
 
         }
    
