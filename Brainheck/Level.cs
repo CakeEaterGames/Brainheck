@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,9 @@ namespace Brainheck
         }
         public void LoadFromRes()
         {
+            lib.DialogRes("Levels." + ID + ".IntroDialog.txt");
+            Console.ResetColor();
+
             var RawMeta = lib.ResText("Levels." + ID + ".meta.txt");
             var RamTests = lib.ResText("Levels." + ID + ".tests.txt");
 
@@ -47,6 +51,8 @@ namespace Brainheck
             Input = new List<byte>(Tests[index].InputChars);
             ExpectedOutput = new List<byte>(Tests[index].OutputChars);
         }
+
+        
 
         int TicksReq, CharsReq, MemoryReq;
 
@@ -139,7 +145,7 @@ namespace Brainheck
             Console.WriteLine();
 
 
-            Console.WriteLine("Test №");
+            Console.WriteLine("Test №"+CurrentTest);
 
             Console.WriteLine("Input:  " + string.Join(", ", Input));
             Console.WriteLine();
@@ -191,7 +197,7 @@ namespace Brainheck
         }
         public void ControlPrompt()
         {
-            Console.WriteLine("Enter: Run program; Space: Step; 1-9: Set speed; Escape: Exit; F: Open the level directory");
+            Console.WriteLine("Enter: Run program;       Space: Step;       Escape: Exit;       F: Open the level directory");
         }
 
         int lastPointerLocation = 0;
@@ -236,8 +242,6 @@ namespace Brainheck
             Console.Write("   {0}  ", "^");
             lastPointerLocation = MemoryPointer;
         }
-
-
 
         public void RewriteCells()
         {
@@ -303,13 +307,29 @@ namespace Brainheck
             {
                 Console.ResetColor();
                 Console.SetCursorPosition(lastCodeLocation % Console.BufferWidth, lastCodeLocation / Console.BufferWidth + codeY);
-                Console.Write(Code[lastCodeLocation]);
+                if (Code.Length> lastCodeLocation)
+                {
+                    Console.Write(Code[lastCodeLocation]);
+                }
+                else
+                {
+                    Console.Write(" ");
+                }
+            
 
 
                 lastCodeLocation = CodePointer;
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.SetCursorPosition(CodePointer % Console.BufferWidth, CodePointer / Console.BufferWidth + codeY);
-                Console.Write(bf.Code[CodePointer]);
+                if (bf.Code.Length > CodePointer)
+                {
+                    Console.Write(bf.Code[CodePointer]);
+                }
+                else
+                {
+                    Console.Write(" ");
+                }
+
                 Console.ResetColor();
 
             }
@@ -323,7 +343,7 @@ namespace Brainheck
         }
         public void Run(RunSpeed sp)
         {
-            LoadFromRes();
+           // LoadFromRes();
             SetTest(CurrentTest);
             LoadSolutionFromFile();
             DrawLayout();
@@ -357,14 +377,112 @@ namespace Brainheck
                     }
                 }
             }
+
+            Console.Clear();
+            bool solved = VeryfySolution();
+
+            if (solved)
+            {
+                IsLevelSolved = true;
+            }
+            
+
             MemoryPointer = 0;
             CodePointer = 0;
-
             Console.Clear();
             SetTest(CurrentTest);
             LoadSolutionFromFile();
             DrawLayout();
         }
+
+        public bool VeryfySolution()
+        {
+            for (int ti = 0; ti < Tests.Count; ti++)
+            {
+                var test = Tests[ti];
+                Brainfuck bf = new Brainfuck();
+                bf.Init(Code,new List<byte>(test.StartingTape), new List<byte>(test.InputChars));
+                bf.FastRun();
+
+                bool valid = true;
+
+                switch (bf.CurrentState)
+                {
+                    case Brainfuck.State.Noraml:
+                        break;
+                    case Brainfuck.State.Finished:
+                        break;
+                    case Brainfuck.State.OutOfBounds:
+                        valid = false;
+                        Console.WriteLine("Instruction Pointer got out of bounds");
+                        break;
+                    case Brainfuck.State.NoInput:
+                        valid = false;
+                        Console.WriteLine("Attempted to get input but input was empty");
+                        break;
+                    case Brainfuck.State.TooManySteps:
+                        valid = false;
+                        Console.WriteLine("The program ran for " + bf.MaxStepCount + " steps.");
+                        Console.WriteLine("If this is intended, please change the MaxStepCount variable in cfg.ini");
+                        break;
+                    default:
+                        break;
+                }
+            
+                if (test.ToCheckEndOutput)
+                {
+                    var t1 = string.Join(", ", bf.Output);
+                    var t2 = string.Join(", ", test.OutputChars);
+                    if (t1!=t2)
+                    {
+                        Console.WriteLine("Expected output: " + t2);
+                        Console.WriteLine("But got: " + t1);
+                        valid = false;
+                    }
+                }
+                if (test.ToCheckEndPos)
+                {
+                    if (test.EndPos != bf.MC)
+                    {
+                        valid = false;
+                        Console.WriteLine("Memory pointer: " + test.EndPos);
+                        Console.WriteLine("But got: " + bf.MC);
+                    }
+                }
+                if (test.ToCheckEndTape)
+                {
+                    var t1 = string.Join(", ", bf.GetFinalTape());
+                    var t2 = string.Join(", ", test.EndTape);
+                    if (t1 != t2)
+                    {
+                        Console.WriteLine("Expected Memory: " + t2);
+                        Console.WriteLine("But got: " + t1);
+                        valid = false;
+                    }
+                }
+
+                if (!valid)
+                {
+                    CurrentTest = ti;
+                    Console.WriteLine("Failed test "+ti);
+                    Console.ReadKey(true);
+                    SetTest(ti);
+                    return false;
+                }
+
+            }
+            return true;
+        }
+
+        public void CongratulationScreen()
+        {
+            Console.Clear();
+            Console.WriteLine("Task Complete!");
+        
+
+        }
+
+        public bool IsLevelSolved = false;
 
         public void Loop()
         {
@@ -394,29 +512,35 @@ namespace Brainheck
                         case ConsoleKey.Spacebar:
                             Run(RunSpeed.steps);
                             break;
+                        case ConsoleKey.F:
+                            Process.Start(Directory.GetCurrentDirectory()+ "/Soulutions/" + ID);
+                            break;
                         default:
                             repeat = true;
                             break;
                     }
                 }
+
+                if (IsLevelSolved)
+                {
+                    SaveData.Set(ID+(LevelStat.IsSolved.ToString()),"true");
+                    CongratulationScreen();
+                    Console.ReadKey(true);
+                    lib.DialogRes("Levels." + ID + ".SolvedDialog.txt");
+                    break;
+                }
+
                 if (toBreak) break;
             }
         }
 
     }
 
-
-
 }
 
-/* 
+ /* 
  TODO
-
-
- Errors
  Debug (!)
  Sounds
-
- Level input/output
- Veryfy the tests
+ cfg.ini
  */

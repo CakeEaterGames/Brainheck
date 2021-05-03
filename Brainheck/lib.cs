@@ -11,7 +11,7 @@ namespace Brainheck
 {
     public static class lib
     {
-        static string PressEnter = "Press Enter to continue";
+        static string PressEnter = "Press Any Key to continue or press Esace to skip";
         public static bool ToClear = true;
         public static void Dialog(string[] lines)
         {
@@ -29,7 +29,11 @@ namespace Brainheck
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.WriteLine(PressEnter);
-                Console.ReadLine();
+                var k = Console.ReadKey(true);
+                if (k.Key== ConsoleKey.Escape)
+                {
+                    break;
+                }
             }
         }
 
@@ -40,17 +44,50 @@ namespace Brainheck
 
         public static void LevelSelectScreen()
         {
-            LevelGroup("Getting started");
-            LevelTitle(LevelName.Intro);
-            LevelTitle(LevelName.tut1);
-            LevelTitle(LevelName.tut2);
-            LevelTitle(LevelName.tut3);
-            LevelTitle(LevelName.tut4);
-            LevelTitle(LevelName.tut5);
+            while (true)
+            {
+                Console.Clear();
 
-            Console.WriteLine();
-            LevelSelectPrompt();
 
+                LevelGroup("Getting started");
+                LevelTitle(LevelName.Intro);
+                LevelTitle(LevelName.tut1);
+                LevelTitle(LevelName.tut2);
+                LevelTitle(LevelName.tut3);
+                LevelTitle(LevelName.tut4);
+                LevelTitle(LevelName.tut5);
+
+                Console.WriteLine();
+                LevelSelectPrompt();
+
+                var inp = Console.ReadLine();
+
+              
+
+                if (LevelUtils.LevelIds.ContainsKey(inp))
+                {
+                    var n = LevelUtils.LevelData[LevelUtils.LevelIds[inp]].Name.ToString();
+
+                    switch (n)
+                    {
+                        case "Intro":
+                            DialogRes("Dialogs.intro.txt");
+                            break;
+                        default:
+                            Level l = new Level(n);
+                            l.Loop();
+                            break;
+                    }
+
+                   
+                }
+                else
+                {
+                    Console.WriteLine("No level with this ID. Try again");
+                    Thread.Sleep(1000);
+                
+                }
+            }
         }
         public static void LevelTitle(LevelName name)
         {
@@ -149,5 +186,17 @@ namespace Brainheck
             }
             return res;
         }
+
+        /*
+        public static List<T> CopyList<T>(List<T> l)
+        {
+            List<T> res = new List<T>();
+            foreach (var item in l)
+            {
+                res.Add(item);
+            }
+            return res;
+        }
+        */
     }
 }

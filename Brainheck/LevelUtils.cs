@@ -32,11 +32,18 @@ namespace Brainheck
         }
 
         public static Dictionary<LevelName, LevelStruct> LevelData = new Dictionary<LevelName, LevelStruct>();
+        public static Dictionary<string, LevelName> LevelIds = new Dictionary<string, LevelName>();
         public static void PrepareLevelTitles()
         {
             LevelData.Add(LevelName.Intro, new LevelStruct(LevelName.Intro, "0", "Introduction"));
             LevelData.Add(LevelName.tut1, new LevelStruct(LevelName.tut1, "t1", "Tutorial 1"));
             LevelData.Add(LevelName.tut2, new LevelStruct(LevelName.tut2, "t2", "Tutorial 2"));
+
+
+            foreach (var l in LevelData)
+            {
+                LevelIds.Add(l.Value.Id,l.Key);
+            }
         }
 
         public static Dictionary<LevelName, LevelName[]> UnlockConditions = new Dictionary<LevelName, LevelName[]>();

@@ -59,12 +59,6 @@
     <EmbeddedResource Include="Dialogs\intro.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Dialogs\tut1.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Dialogs\tut1 end.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Save">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -73,6 +67,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Levels\tut1\meta.txt" />
     <EmbeddedResource Include="Levels\tut1\tests.txt" />
+    <EmbeddedResource Include="Levels\tut1\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\tut1\SolvedDialog.txt" />
     <Content Include="Levels\_example\meta.txt" />
     <Content Include="Levels\_example\tests.txt" />
   </ItemGroup>
