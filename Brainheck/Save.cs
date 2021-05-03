@@ -13,6 +13,7 @@ namespace Brainheck
         public static void Set(string name, string val)
         {
             Var[name] = val;
+            SaveToFile();
         }
         public static string GetString(string name)
         {
@@ -56,11 +57,12 @@ namespace Brainheck
             {
                 var pair = v.Split(':');
                 if (pair[0] != "")
-                {   
-                    Set(pair[0], pair[1]);
+                { 
+                    Var[pair[0]] = pair[1];
                 }
          
             }
+            sr.Close();
         }
 
 

@@ -11,7 +11,7 @@ namespace Brainheck
 {
     public static class lib
     {
-        static string PressEnter = "Press Any Key to continue or press Esace to skip";
+        static string PressEnter = "Press Any Key to continue or press Escape to skip";
         public static bool ToClear = true;
         public static void Dialog(string[] lines)
         {
@@ -35,6 +35,8 @@ namespace Brainheck
                     break;
                 }
             }
+
+
         }
 
         public static void DialogRes(string fileName)
@@ -55,7 +57,15 @@ namespace Brainheck
                 LevelTitle(LevelName.tut2);
                 LevelTitle(LevelName.tut3);
                 LevelTitle(LevelName.tut4);
-                LevelTitle(LevelName.tut5);
+
+                LevelGroup("Extra tutorials");
+                LevelTitle(LevelName.extut1);
+                LevelTitle(LevelName.extut2);
+                LevelTitle(LevelName.extut3);
+                LevelTitle(LevelName.extut4);
+
+                LevelGroup("Basics");
+                LevelTitle(LevelName.MoveCell);
 
                 Console.WriteLine();
                 LevelSelectPrompt();
@@ -72,6 +82,7 @@ namespace Brainheck
                     {
                         case "Intro":
                             DialogRes("Dialogs.intro.txt");
+                            SaveData.Set("Intro" + (LevelStat.IsSolved.ToString()), "true");
                             break;
                         default:
                             Level l = new Level(n);
@@ -142,7 +153,7 @@ namespace Brainheck
         public static void LevelSelectPrompt()
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write("To select a level type it's ");
+            Console.Write("To select a level type its ");
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.Write("id ");
             Console.ForegroundColor = ConsoleColor.DarkGray;

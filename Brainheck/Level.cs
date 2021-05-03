@@ -71,8 +71,8 @@ namespace Brainheck
 
             public SolutionTest(string inputChars, string outputChars, string startingTape, string endTape, string startPos, string endPos)
             {
-                ToCheckEndTape = !outputChars.Contains('*');
-                ToCheckEndOutput = !endTape.Contains('*');
+                ToCheckEndTape = !endTape.Contains('*');
+                ToCheckEndOutput = !outputChars.Contains('*');
                 ToCheckEndPos = !endPos.Contains('*');
 
                 InputChars = lib.StringToByteList(inputChars, ',');

@@ -1,0 +1,5 @@
+﻿Tutirial 2
+Write a program that adds 6 to cell with index 6. When you finish the program return the eye to cell 0 
+18
+18
+6

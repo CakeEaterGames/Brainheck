@@ -1,0 +1,6 @@
+﻿Next commands are < and >
+They move the eye left and right on the tape
+For example
+Program ">>>" moves the eye 3 cells to the right
+Program ">+>+>+" adds 1 to cells 1, 2 and 3
+Your next task is

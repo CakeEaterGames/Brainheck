@@ -38,7 +38,15 @@ namespace Brainheck
             LevelData.Add(LevelName.Intro, new LevelStruct(LevelName.Intro, "0", "Introduction"));
             LevelData.Add(LevelName.tut1, new LevelStruct(LevelName.tut1, "t1", "Tutorial 1"));
             LevelData.Add(LevelName.tut2, new LevelStruct(LevelName.tut2, "t2", "Tutorial 2"));
+            LevelData.Add(LevelName.tut3, new LevelStruct(LevelName.tut3, "t3", "Tutorial 3"));
+            LevelData.Add(LevelName.tut4, new LevelStruct(LevelName.tut4, "t4", "Tutorial 4"));
 
+            LevelData.Add(LevelName.extut1, new LevelStruct(LevelName.extut1, "ext1", "Extra Tutorial 1"));
+            LevelData.Add(LevelName.extut2, new LevelStruct(LevelName.extut2, "ext2", "Extra Tutorial 2"));
+            LevelData.Add(LevelName.extut3, new LevelStruct(LevelName.extut3, "ext3", "Extra Tutorial 3"));
+            LevelData.Add(LevelName.extut4, new LevelStruct(LevelName.extut4, "ext4", "Extra Tutorial 4"));
+
+            LevelData.Add(LevelName.MoveCell, new LevelStruct(LevelName.MoveCell, "1", "Move"));
 
             foreach (var l in LevelData)
             {
@@ -54,12 +62,14 @@ namespace Brainheck
             UnlockConditions.Add(LevelName.tut2, new LevelName[] { LevelName.tut1 });
             UnlockConditions.Add(LevelName.tut3, new LevelName[] { LevelName.tut2 });
             UnlockConditions.Add(LevelName.tut4, new LevelName[] { LevelName.tut3 });
-            UnlockConditions.Add(LevelName.tut5, new LevelName[] { LevelName.tut4 });
 
-            UnlockConditions.Add(LevelName.ClearCell, new LevelName[] { LevelName.tut5 });
-            UnlockConditions.Add(LevelName.ClearCells, new LevelName[] { LevelName.ClearCell });
+            UnlockConditions.Add(LevelName.extut1, new LevelName[] { LevelName.tut4 });
+            UnlockConditions.Add(LevelName.extut2, new LevelName[] { LevelName.extut1 });
+            UnlockConditions.Add(LevelName.extut3, new LevelName[] { LevelName.extut2 });
+            UnlockConditions.Add(LevelName.extut4, new LevelName[] { LevelName.extut3 });
 
-            UnlockConditions.Add(LevelName.MoveCell, new LevelName[] { LevelName.ClearCell });
+
+            UnlockConditions.Add(LevelName.MoveCell, new LevelName[] { LevelName.tut4 });
 
         }
         public static bool IsUnlocked(LevelName lvl)
@@ -98,11 +108,14 @@ namespace Brainheck
         tut2,
         tut3,
         tut4,
-        tut5,
 
-        ClearCell,
-        ClearCells,
+        extut1,
+        extut2,
+        extut3,
+        extut4,
+
         MoveCell,
+     
     }
 
 }

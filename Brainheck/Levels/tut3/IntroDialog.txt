@@ -1,0 +1,10 @@
+﻿Next commands are , and .
+They handle program input and output
+Command , reads a single symbol from the input and puts it in the current cell
+Command . takes a value from the current cell, converts it into the ascii symbol, and sends it to the output
+Look up "ASCII table" for more info
+For example
+Program "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++." adds 97 to the current cell and sends it to the output
+It prints the letter 'a'
+Amazing, right?
+Your task is

@@ -1,0 +1,15 @@
+﻿Next commands are the hardest ones
+Commands [ and ] handle "conditions" and "loops"
+if the value in the current sell is greater than 0 the program continues inside the pair of square brackets
+if the value in the current sell is 0 the program skips all comands inside the pair of square brackets
+For example
+Program "[+++>]" checks if the value in the current cell is greater then 0. If it is, than the programm adds 3 to the value in the current cell and moves the eye to the right
+But the brackets also act as a loop
+When the programm reaches the ] it checks if the value in the current cell is greater then 0. And if it is, the program jumps back to the [ and the code inside the brackets repeats
+For example
+Program "[-]" clears the current cell.
+While the value is > 0 subtract 1
+Make sure that you understand this part
+It is the most important concept
+Read this again if you have to
+Your task is

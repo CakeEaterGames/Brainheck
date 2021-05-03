@@ -1,6 +1,7 @@
 ﻿I will now explain to you the basics
 You will write programs that operate on an infinite strip of cells
 The eye (^ symbol) looks at a currently selected cell
+It can also be called a pointer
 A + command adds 1 to the value in the selected cell
 A - command subtracts 1 form the value in the selected cell
 For example

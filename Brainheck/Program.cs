@@ -12,9 +12,6 @@ namespace Brainheck
     {
         static void Main(string[] args)
         {
-          
-
-
             LevelUtils.Init();
             SaveData.LoadFromFile();
 

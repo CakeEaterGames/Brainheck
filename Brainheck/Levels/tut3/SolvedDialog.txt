@@ -1,0 +1,3 @@
+﻿It works
+It is a bit annoying to work with big numbers when you can only increment and decrement them by 1
+In later tasks there will be an easier way to do this

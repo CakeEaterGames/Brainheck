@@ -69,6 +69,18 @@
     <EmbeddedResource Include="Levels\tut1\tests.txt" />
     <EmbeddedResource Include="Levels\tut1\IntroDialog.txt" />
     <EmbeddedResource Include="Levels\tut1\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\tut2\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\tut2\meta.txt" />
+    <EmbeddedResource Include="Levels\tut2\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\tut2\tests.txt" />
+    <EmbeddedResource Include="Levels\tut3\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\tut3\meta.txt" />
+    <EmbeddedResource Include="Levels\tut3\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\tut3\tests.txt" />
+    <EmbeddedResource Include="Levels\tut4\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\tut4\meta.txt" />
+    <EmbeddedResource Include="Levels\tut4\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\tut4\tests.txt" />
     <Content Include="Levels\_example\meta.txt" />
     <Content Include="Levels\_example\tests.txt" />
   </ItemGroup>
