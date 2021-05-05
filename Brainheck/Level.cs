@@ -12,21 +12,22 @@ namespace Brainheck
     class Level
     {
         public string ID;
+       
         public Level(string id)
         {
             ID = id;
         }
         public void LoadFromRes()
         {
-            lib.DialogRes("Levels." + ID + ".IntroDialog.txt");
+            Dialog.FromRes("Levels." + ID + ".IntroDialog.txt");
             Console.ResetColor();
 
             var RawMeta = lib.ResText("Levels." + ID + ".meta.txt");
             var RamTests = lib.ResText("Levels." + ID + ".tests.txt");
 
             var m = RawMeta.Split('\n');
-            Name = m[0];
-            Task = m[1];
+            LevelName = m[0];
+            LevelTask = m[1];
 
             RequiredSteps = int.Parse(m[2]);
             RequiredSize = int.Parse(m[3]);
@@ -40,62 +41,6 @@ namespace Brainheck
                 SolutionTest lt = new SolutionTest(r[0], r[1], r[2], r[3], r[4], r[5]);
                 Tests.Add(lt);
             }
-
-        }
-        public List<SolutionTest> Tests = new List<SolutionTest>();
-        public int CurrentTest = 0;
-        public void SetTest(int index)
-        {
-            CurrentTest = index;
-            Memory = new List<byte>(Tests[index].StartingTape);
-            Input = new List<byte>(Tests[index].InputChars);
-            ExpectedOutput = new List<byte>(Tests[index].OutputChars);
-        }
-
- 
-
-        public struct SolutionTest
-        {
-            public List<byte> InputChars;
-            public List<byte> OutputChars;
-            public List<byte> StartingTape;
-            public List<byte> EndTape;
-            public int StartPos;
-            public int EndPos;
-
-            public bool ToCheckEndTape;
-            public bool ToCheckEndOutput;
-            public bool ToCheckEndPos;
-
-            public SolutionTest(string inputChars, string outputChars, string startingTape, string endTape, string startPos, string endPos)
-            {
-                ToCheckEndTape = !endTape.Contains('*');
-                ToCheckEndOutput = !outputChars.Contains('*');
-                ToCheckEndPos = !endPos.Contains('*');
-
-                InputChars = lib.StringToByteList(inputChars, ',');
-                StartingTape = lib.StringToByteList(startingTape, ',');
-                StartPos = int.Parse(startPos);
-
-                EndTape = null;
-                OutputChars = null;
-                EndPos = 0;
-
-                if (ToCheckEndTape)
-                {
-                    EndTape = lib.StringToByteList(endTape, ',');
-                }
-                if (ToCheckEndOutput)
-                {
-                    OutputChars = lib.StringToByteList(outputChars, ',');
-                }
-                if (ToCheckEndPos)
-                {
-                    EndPos = int.Parse(endPos);
-                }            
-            }
-         
-
 
         }
 
@@ -123,24 +68,34 @@ namespace Brainheck
             Code = OptimiseSolution(Code);
         }
 
-        List<byte> Memory = new List<byte>();
-        List<byte> Input = new List<byte>();
-        List<byte> ExpectedOutput = new List<byte>();
+       
+
         int CellsOnScreen = 19 * 6;
+        public string LevelTask = "Task text here";
+        public string LevelName = "Level name";
+        int ConIndexY, ConPointerY, ConCellY, ConCodeY;
 
-        public string Task = "Task text here";
-        public string Name = "Level name";
+        int lastMemoryPointer = 0;
+        int MemoryPointer = 0;
 
-        int indexY, pointerY, cellY, codeY;
+        int LastMemoryPage = -1;
+        int MemoryPage = 0;
+
+        int lastCodePointer = 0;
+        int CodePointer = 0;
+
+        public int BestSteps, BestSize, BestMemory;
+        public int CurrentSteps, CurrentSize, CurrentMemory;
+        public int RequiredSteps, RequiredSize, RequiredMemory;
 
         public void DrawLayout()
         {
             Console.Clear();
             Console.WriteLine("Level: ");
-            Console.WriteLine("    " + Name);
+            Console.WriteLine("    " + LevelName);
 
             Console.WriteLine("Task:");
-            Console.WriteLine("    " + Task);
+            Console.WriteLine("    " + LevelTask);
             Console.WriteLine();
 
 
@@ -154,7 +109,7 @@ namespace Brainheck
             string s = new string('-', Console.BufferWidth - 1);
             CellsOnScreen = (Console.BufferWidth - 1) / 6;
 
-            indexY = Console.CursorTop - 1;
+            ConIndexY = Console.CursorTop - 1;
 
             Console.WriteLine(s);
 
@@ -167,7 +122,7 @@ namespace Brainheck
             Console.WriteLine();
  
 
-            cellY = Console.CursorTop - 1;
+            ConCellY = Console.CursorTop - 1;
             for (int i = 0; i < CellsOnScreen; i++)
             {
                 Console.Write("|     ");
@@ -177,7 +132,7 @@ namespace Brainheck
             Console.WriteLine();
             Console.WriteLine(s);
 
-            pointerY = Console.CursorTop;
+            ConPointerY = Console.CursorTop;
 
             Console.WriteLine();
 
@@ -186,7 +141,7 @@ namespace Brainheck
             //Draw a layout
             //  Tittle, test number, input, empty memory, keys, place for code
             Console.WriteLine();
-            codeY = Console.CursorTop;
+            ConCodeY = Console.CursorTop;
             Console.WriteLine(Code);
 
 
@@ -198,17 +153,9 @@ namespace Brainheck
         {
             Console.WriteLine("Enter: Run program;       Space: Step;       Escape: Exit;       F: Open the level directory");
         }
-
-        int lastPointerLocation = 0;
-        int MemoryPointer = 0;
-
-        int LastMemoryPage = -1;
-        int MemoryPage = 0;
-
-
         public void RewriteIndexes()
         {
-            Console.SetCursorPosition(0, indexY);
+            Console.SetCursorPosition(0, ConIndexY);
             int offset = (MemoryPointer / CellsOnScreen) * CellsOnScreen;
             for (int i = 0 + offset; i < CellsOnScreen + offset; i++)
             {
@@ -239,25 +186,24 @@ namespace Brainheck
         }
         public void RewritePointer()
         {
-            Console.SetCursorPosition((lastPointerLocation % CellsOnScreen) * 6, pointerY);
+            Console.SetCursorPosition((lastMemoryPointer % CellsOnScreen) * 6, ConPointerY);
             Console.Write("      ");
 
-            Console.SetCursorPosition((MemoryPointer % CellsOnScreen) * 6, pointerY);
+            Console.SetCursorPosition((MemoryPointer % CellsOnScreen) * 6, ConPointerY);
             Console.Write("   {0}  ", "^");
-            lastPointerLocation = MemoryPointer;
+            lastMemoryPointer = MemoryPointer;
         }
-
         public void RewriteCell(int i)
         {
             
-            Console.SetCursorPosition(0, cellY);
+            Console.SetCursorPosition(0, ConCellY);
 
             int v = 0;
             if (Memory.Count > i)
             {
                 v = Memory[i];
             }
-            Console.SetCursorPosition((i % CellsOnScreen) * 6 + 2, cellY);
+            Console.SetCursorPosition((i % CellsOnScreen) * 6 + 2, ConCellY);
 
             if (v == 0)
             {
@@ -280,7 +226,7 @@ namespace Brainheck
                     Console.Write("{0}", v);
                     break;
             }
-            Console.SetCursorPosition((i % CellsOnScreen) * 6 + 3, cellY + 1);
+            Console.SetCursorPosition((i % CellsOnScreen) * 6 + 3, ConCellY + 1);
             if (v >= 32 && v <= 126)
             {
                 switch ((char)v)
@@ -297,41 +243,35 @@ namespace Brainheck
 
             Console.ResetColor();
         }
-
         public void RewriteCells()
         {
-            Console.SetCursorPosition(0, cellY);
+            Console.SetCursorPosition(0, ConCellY);
             int offset = (MemoryPointer / CellsOnScreen) * CellsOnScreen;
             for (int i = 0 + offset; i < CellsOnScreen + offset; i++)
             {
                 RewriteCell(i);
             }
         }
-
-        Brainfuck bf;
-        public string Code = "";
-        int lastCodeLocation = 0;
-        int CodePointer = 0;
         public void RewriteCodePos()
         {
             if (bf.Code.Length > CodePointer)
             {
                 Console.ResetColor();
-                Console.SetCursorPosition(lastCodeLocation % Console.BufferWidth, lastCodeLocation / Console.BufferWidth + codeY);
-                if (Code.Length> lastCodeLocation)
+                Console.SetCursorPosition(lastCodePointer % Console.BufferWidth, lastCodePointer / Console.BufferWidth + ConCodeY);
+                if (Code.Length > lastCodePointer)
                 {
-                    Console.Write(Code[lastCodeLocation]);
+                    Console.Write(Code[lastCodePointer]);
                 }
                 else
                 {
                     Console.Write(" ");
                 }
-            
 
 
-                lastCodeLocation = CodePointer;
+
+                lastCodePointer = CodePointer;
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.SetCursorPosition(CodePointer % Console.BufferWidth, CodePointer / Console.BufferWidth + codeY);
+                Console.SetCursorPosition(CodePointer % Console.BufferWidth, CodePointer / Console.BufferWidth + ConCodeY);
                 if (bf.Code.Length > CodePointer)
                 {
                     Console.Write(bf.Code[CodePointer]);
@@ -345,7 +285,22 @@ namespace Brainheck
 
             }
         }
+        public void CongratulationScreen()
+        {
+            Console.Clear();
+            Console.WriteLine("Task Complete!");
+            Console.WriteLine("Steps: " + CurrentSteps);
+            Console.WriteLine("Size: " + CurrentSize);
+            Console.WriteLine("Memory: " + CurrentMemory);
 
+        }
+
+
+        Brainfuck bf;
+        List<byte> Memory = new List<byte>();
+        List<byte> Input = new List<byte>();
+        List<byte> ExpectedOutput = new List<byte>();
+        public string Code = "";
         public enum RunSpeed
         {
             steps,
@@ -355,7 +310,6 @@ namespace Brainheck
         }
         public void Run(RunSpeed sp)
         {
-           // LoadFromRes();
             SetTest(CurrentTest);
             LoadSolutionFromFile();
             DrawLayout();
@@ -430,6 +384,56 @@ namespace Brainheck
         }
 
 
+        public int CurrentTest = 0;
+        public List<SolutionTest> Tests = new List<SolutionTest>();
+        public struct SolutionTest
+        {
+            public List<byte> InputChars;
+            public List<byte> OutputChars;
+            public List<byte> StartingTape;
+            public List<byte> EndTape;
+            public int StartPos;
+            public int EndPos;
+
+            public bool ToCheckEndTape;
+            public bool ToCheckEndOutput;
+            public bool ToCheckEndPos;
+
+            public SolutionTest(string inputChars, string outputChars, string startingTape, string endTape, string startPos, string endPos)
+            {
+                ToCheckEndTape = !endTape.Contains('*');
+                ToCheckEndOutput = !outputChars.Contains('*');
+                ToCheckEndPos = !endPos.Contains('*');
+
+                InputChars = lib.StringToByteList(inputChars, ',');
+                StartingTape = lib.StringToByteList(startingTape, ',');
+                StartPos = int.Parse(startPos);
+
+                EndTape = null;
+                OutputChars = null;
+                EndPos = 0;
+
+                if (ToCheckEndTape)
+                {
+                    EndTape = lib.StringToByteList(endTape, ',');
+                }
+                if (ToCheckEndOutput)
+                {
+                    OutputChars = lib.StringToByteList(outputChars, ',');
+                }
+                if (ToCheckEndPos)
+                {
+                    EndPos = int.Parse(endPos);
+                }
+            }
+        }
+        public void SetTest(int index)
+        {
+            CurrentTest = index;
+            Memory = new List<byte>(Tests[index].StartingTape);
+            Input = new List<byte>(Tests[index].InputChars);
+            ExpectedOutput = new List<byte>(Tests[index].OutputChars);
+        }
         public string OptimiseSolution(string s)
         {
             StringBuilder sb = new StringBuilder();
@@ -498,7 +502,6 @@ namespace Brainheck
             return sb.ToString();
 
         }
-
         public bool VeryfySolution()
         {
             Code = OptimiseSolution(Code);
@@ -588,22 +591,8 @@ namespace Brainheck
             return true;
         }
 
-        public int BestSteps, BestSize, BestMemory;
-        public int CurrentSteps, CurrentSize, CurrentMemory;
-        public int RequiredSteps, RequiredSize, RequiredMemory;
-
-        public void CongratulationScreen()
-        {
-            Console.Clear();
-            Console.WriteLine("Task Complete!");
-            Console.WriteLine("Steps: " + CurrentSteps);
-            Console.WriteLine("Size: " + CurrentSize);
-            Console.WriteLine("Memory: " + CurrentMemory);
-
-        }
 
         public bool IsLevelSolved = false;
-
         public void Loop()
         {
             Console.ResetColor();
@@ -661,7 +650,7 @@ namespace Brainheck
                     }
                     CongratulationScreen();
                     Console.ReadKey(true);
-                    lib.DialogRes("Levels." + ID + ".SolvedDialog.txt");
+                    Dialog.FromRes("Levels." + ID + ".SolvedDialog.txt");
                     break;
                 }
 
@@ -676,6 +665,5 @@ namespace Brainheck
  /* 
  TODO
  Debug (!)
- Sounds
  cfg.ini
  */

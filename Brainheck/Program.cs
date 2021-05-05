@@ -12,23 +12,12 @@ namespace Brainheck
     {
         static void Main(string[] args)
         {
-
-            //lib.BeepTest();
-
-
-
-
-            LevelUtils.Init();
+            LevelSelect.Init();
             SaveData.LoadFromFile();
 
-            lib.LevelSelectScreen();
+            LevelSelect.Draw();
 
- 
-
-          //  Level l = new Level("tut1");
-          
-            //l.Loop();
-           Console.ReadLine();
+            Console.ReadLine();
         }
     }
 }

@@ -45,9 +45,9 @@
   <ItemGroup>
     <Compile Include="Brainfuck.cs" />
     <Compile Include="Compiler.cs" />
+    <Compile Include="Dialog.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="LevelSelect.cs" />
-    <Compile Include="LevelUtils.cs" />
     <Compile Include="lib.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
