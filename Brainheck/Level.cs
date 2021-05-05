@@ -28,9 +28,9 @@ namespace Brainheck
             Name = m[0];
             Task = m[1];
 
-            TicksReq = int.Parse(m[2]);
-            CharsReq = int.Parse(m[3]);
-            MemoryReq = int.Parse(m[4]);
+            RequiredSteps = int.Parse(m[2]);
+            RequiredSize = int.Parse(m[3]);
+            RequiredMemory = int.Parse(m[4]);
 
             var tests = RamTests.Split('\n');
 
@@ -52,9 +52,7 @@ namespace Brainheck
             ExpectedOutput = new List<byte>(Tests[index].OutputChars);
         }
 
-        
-
-        int TicksReq, CharsReq, MemoryReq;
+ 
 
         public struct SolutionTest
         {
@@ -122,6 +120,7 @@ namespace Brainheck
             sr.Close();
             Compiler c = new Compiler();
             Code = c.Compile(highCode);
+            Code = OptimiseSolution(Code);
         }
 
         List<byte> Memory = new List<byte>();
@@ -202,6 +201,11 @@ namespace Brainheck
 
         int lastPointerLocation = 0;
         int MemoryPointer = 0;
+
+        int LastMemoryPage = -1;
+        int MemoryPage = 0;
+
+
         public void RewriteIndexes()
         {
             Console.SetCursorPosition(0, indexY);
@@ -243,57 +247,64 @@ namespace Brainheck
             lastPointerLocation = MemoryPointer;
         }
 
+        public void RewriteCell(int i)
+        {
+            
+            Console.SetCursorPosition(0, cellY);
+
+            int v = 0;
+            if (Memory.Count > i)
+            {
+                v = Memory[i];
+            }
+            Console.SetCursorPosition((i % CellsOnScreen) * 6 + 2, cellY);
+
+            if (v == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            int l = (v + "").Length;
+            switch (l)
+            {
+                case 1:
+                    Console.Write(" {0} ", v);
+                    break;
+                case 2:
+                    Console.Write(" {0}", v);
+                    break;
+                case 3:
+                    Console.Write("{0}", v);
+                    break;
+            }
+            Console.SetCursorPosition((i % CellsOnScreen) * 6 + 3, cellY + 1);
+            if (v >= 32 && v <= 126)
+            {
+                switch ((char)v)
+                {
+                    case '\n':
+                        Console.Write("\\n");
+                        break;
+                    default:
+                        Console.Write(" " + (char)v);
+                        break;
+                }
+            }
+
+
+            Console.ResetColor();
+        }
+
         public void RewriteCells()
         {
             Console.SetCursorPosition(0, cellY);
             int offset = (MemoryPointer / CellsOnScreen) * CellsOnScreen;
             for (int i = 0 + offset; i < CellsOnScreen + offset; i++)
             {
-                int v = 0;
-                if (Memory.Count > i)
-                {
-                    v = Memory[i];
-                }
-                Console.SetCursorPosition((i % CellsOnScreen) * 6 + 2, cellY);
-
-                if (v == 0)
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-                int l = (v + "").Length;
-                switch (l)
-                {
-                    case 1:
-                        Console.Write(" {0} ", v);
-                        break;
-                    case 2:
-                        Console.Write(" {0}", v);
-                        break;
-                    case 3:
-                        Console.Write("{0}", v);
-                        break;
-                }
-                Console.SetCursorPosition((i % CellsOnScreen) * 6 + 3, cellY + 1);
-                if (v >= 32 && v <= 126)
-                {
-                    switch ((char)v)
-                    {
-                        case '\n':
-                            Console.Write("\\n");
-                            break;
-                        default:
-                            Console.Write(" " + (char)v);
-                            break;
-                    }
-                }
-
-
-                Console.ResetColor();
-
+                RewriteCell(i);
             }
         }
 
@@ -339,7 +350,8 @@ namespace Brainheck
         {
             steps,
             breaks,
-            full
+            full,
+            cancel
         }
         public void Run(RunSpeed sp)
         {
@@ -358,12 +370,30 @@ namespace Brainheck
                 CodePointer = bf.PC;
 
                 //TODO: check if needed to rewrite
-                RewriteCells();
-                RewriteIndexes();
-                RewritePointer();
+                if (bf.Command == '+' || bf.Command == '-')
+                {
+                    RewriteCell(MemoryPointer);
+                }
+                if (bf.Command == '>' || bf.Command == '<')
+                {
+                    RewritePointer();
+
+                    MemoryPage = MemoryPointer / CellsOnScreen;
+                    if (LastMemoryPage!=MemoryPage)
+                    {
+                        RewriteIndexes();
+                    }
+                    LastMemoryPage = MemoryPage;
+                }
+
+               
                 RewriteCodePos();
 
                 bf.Iterate();
+
+                // bf.PlaySound();
+                // Thread.Sleep(1);
+
                 if (sp==RunSpeed.steps)
                 {
                     var k = Console.ReadKey(true);
@@ -373,19 +403,23 @@ namespace Brainheck
                     }
                     if (k.Key == ConsoleKey.Escape)
                     {
+                        sp = RunSpeed.cancel;
                         break;
                     }
                 }
             }
 
             Console.Clear();
-            bool solved = VeryfySolution();
 
-            if (solved)
+            if (sp != RunSpeed.cancel)
             {
-                IsLevelSolved = true;
+                bool solved = VeryfySolution();
+
+                if (solved)
+                {
+                    IsLevelSolved = true;
+                }
             }
-            
 
             MemoryPointer = 0;
             CodePointer = 0;
@@ -395,8 +429,80 @@ namespace Brainheck
             DrawLayout();
         }
 
+
+        public string OptimiseSolution(string s)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(" ");
+            foreach (var c in s)
+            {
+                switch (c)
+                {
+                    case '+':
+                        if (sb[sb.Length-1]=='-')
+                        {
+                            sb.Remove(sb.Length - 1, 1);
+                        }
+                        else
+                        {
+                            sb.Append(c);
+                        }
+                        break;
+                    case '-':
+                        if (sb[sb.Length - 1] == '+')
+                        {
+                            sb.Remove(sb.Length - 1, 1);
+                        }
+                        else
+                        {
+                            sb.Append(c);
+                        }
+                        break;
+                    case '>':
+                        if (sb[sb.Length - 1] == '<')
+                        {
+                            sb.Remove(sb.Length - 1, 1);
+                        }
+                        else
+                        {
+                            sb.Append(c);
+                        }
+                        break;
+                    case '<':
+                        if (sb[sb.Length - 1] == '>')
+                        {
+                            sb.Remove(sb.Length - 1, 1);
+                        }
+                        else
+                        {
+                            sb.Append(c);
+                        }
+                        break;
+                    case '.':
+                        sb.Append(c);
+                        break;
+                    case ',':
+                        sb.Append(c);
+                        break;
+                    case '[':
+                        sb.Append(c);
+                        break;
+                    case ']':
+                        sb.Append(c);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            sb.Remove(0, 1);
+            return sb.ToString();
+
+        }
+
         public bool VeryfySolution()
         {
+            Code = OptimiseSolution(Code);
+            int CurSteps=0, CurSize = 0, CurMemory = 0;
             for (int ti = 0; ti < Tests.Count; ti++)
             {
                 var test = Tests[ti];
@@ -437,6 +543,7 @@ namespace Brainheck
                     {
                         Console.WriteLine("Expected output: " + t2);
                         Console.WriteLine("But got: " + t1);
+                        Console.WriteLine();
                         valid = false;
                     }
                 }
@@ -445,8 +552,9 @@ namespace Brainheck
                     if (test.EndPos != bf.MC)
                     {
                         valid = false;
-                        Console.WriteLine("Memory pointer: " + test.EndPos);
+                        Console.WriteLine("Expected eye location: " + test.EndPos);
                         Console.WriteLine("But got: " + bf.MC);
+                        Console.WriteLine();
                     }
                 }
                 if (test.ToCheckEndTape)
@@ -455,8 +563,9 @@ namespace Brainheck
                     var t2 = string.Join(", ", test.EndTape);
                     if (t1 != t2)
                     {
-                        Console.WriteLine("Expected Memory: " + t2);
+                        Console.WriteLine("Expected tape contents: " + t2);
                         Console.WriteLine("But got: " + t1);
+                        Console.WriteLine();
                         valid = false;
                     }
                 }
@@ -469,16 +578,27 @@ namespace Brainheck
                     SetTest(ti);
                     return false;
                 }
-
+                CurSteps += bf.StepCount;
+                CurMemory += bf.UsedMemory;
             }
+            CurrentSize = Code.Length;
+            CurrentMemory = CurMemory / Tests.Count;
+            CurrentSteps = CurSteps / Tests.Count;
+
             return true;
         }
+
+        public int BestSteps, BestSize, BestMemory;
+        public int CurrentSteps, CurrentSize, CurrentMemory;
+        public int RequiredSteps, RequiredSize, RequiredMemory;
 
         public void CongratulationScreen()
         {
             Console.Clear();
             Console.WriteLine("Task Complete!");
-        
+            Console.WriteLine("Steps: " + CurrentSteps);
+            Console.WriteLine("Size: " + CurrentSize);
+            Console.WriteLine("Memory: " + CurrentMemory);
 
         }
 
@@ -492,6 +612,8 @@ namespace Brainheck
             SetTest(0);
             LoadSolutionFromFile();
             DrawLayout();
+
+            
 
             while (true)
             {
@@ -524,6 +646,19 @@ namespace Brainheck
                 if (IsLevelSolved)
                 {
                     SaveData.Set(ID+(LevelStat.IsSolved.ToString()),"true");
+
+                    if (CurrentSteps<=RequiredSteps)
+                    {
+                        SaveData.Set(ID + (LevelStat.IsFast.ToString()), "true");
+                    }
+                    if (CurrentSize <= RequiredSize)
+                    {
+                        SaveData.Set(ID + (LevelStat.IsSmall.ToString()), "true");
+                    }
+                    if (CurrentMemory <= RequiredMemory)
+                    {
+                        SaveData.Set(ID + (LevelStat.IsMemory.ToString()), "true");
+                    }
                     CongratulationScreen();
                     Console.ReadKey(true);
                     lib.DialogRes("Levels." + ID + ".SolvedDialog.txt");

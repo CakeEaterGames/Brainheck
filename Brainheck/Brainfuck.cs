@@ -14,6 +14,7 @@ namespace Brainheck
         public int MC = 0;
         public int PC = 0;
         public int Chain = 0;
+        public char Command = '+';
         public bool IsRunning = false;
 
         public List<byte> Input;
@@ -24,10 +25,10 @@ namespace Brainheck
         public string OutputString = "";
 
         public int StepCount = 0;
-        public int MaxStepCount = 100000;
+        public int MaxStepCount = 10000;
 
-        public int MemoryCount = 1;
-
+        HashSet<int> Visited = new HashSet<int>();
+        public int UsedMemory { get { return Visited.Count; } }
         public State CurrentState = State.Noraml;
         public enum State
         {
@@ -59,11 +60,7 @@ namespace Brainheck
             while (IsRunning)
             {
                 Iterate();
-                if (StepCount>MaxStepCount)
-                {
-                    CurrentState = State.TooManySteps;
-                    break;
-                }
+
             }
         }
 
@@ -72,6 +69,14 @@ namespace Brainheck
             if (PC < Code.Length)
             {
                 StepCount++;
+                if (StepCount > MaxStepCount)
+                {
+                    CurrentState = State.TooManySteps;
+                    IsRunning = false;
+                    return;
+                }
+
+
                 while (Code[PC] == ' ')
                 {
                     PC++;
@@ -90,9 +95,10 @@ namespace Brainheck
                 while (Memory.Count <= MC)
                 {
                     Memory.Add(0);
-                    MemoryCount = Memory.Count;
                 }
 
+                Visited.Add(MC);
+                Command = cur;
                 switch (cur)
                 {
                     case '+':
@@ -188,10 +194,7 @@ namespace Brainheck
                                 }
                             }
                         }
-                        else
-                        {
-                            PC++;
-                        }
+                        PC++;
                         break;
                     default:
                         PC++;
@@ -225,6 +228,36 @@ namespace Brainheck
             }
 
             return Memory;
+        }
+
+        public int SoundDuration = 10;
+        public int SoundStep = 10;
+
+        public void PlaySound()
+        {
+            switch (Command)
+            {
+                case '+':
+                    Console.Beep(1000+SoundStep*Math.Min(10,Chain),SoundDuration);
+                    break;
+                case '-':
+                    Console.Beep(200 - SoundStep * Math.Min(10, Chain), SoundDuration);
+                    break;
+                case '>':
+                    break;
+                case '<':
+                    break;
+                case '.':
+                    break;
+                case ',':
+                    break;
+                case '[':
+                    break;
+                case ']':
+                    break;
+                default:
+                    break;
+            }
         }
     }
 

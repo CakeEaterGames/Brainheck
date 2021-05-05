@@ -12,6 +12,12 @@ namespace Brainheck
     {
         static void Main(string[] args)
         {
+
+            //lib.BeepTest();
+
+
+
+
             LevelUtils.Init();
             SaveData.LoadFromFile();
 

@@ -1,0 +1,5 @@
+﻿From now on you should group all your solutions into functions that you can reuse in later tasks
+It is up to you weather to do it or not though
+Here's my "overenginired" solution:\n#clr\n{\n	[-]\n}\n#move\n{\n	[->>>>+<<<<]\n}\n#t\n{\n	clr()4<move()\n}\n#main\n{\n	>>>>\n	3(t()5>)\n	7<\n}
+Also one thing to note, is that we automatically remove all instances of +- -+ <> >< in your code
+So feel free to use it to your advantage

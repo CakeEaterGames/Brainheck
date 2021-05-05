@@ -1,0 +1,3 @@
+﻿Functions can also use arguments
+You might've been wondering why are there a pair of roud brackets after functions ()
+Here's a simple example 

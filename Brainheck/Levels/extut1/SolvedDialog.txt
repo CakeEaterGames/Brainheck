@@ -1,0 +1,5 @@
+﻿Okay it works, but there's one thing you need to keep in mind
+A cell can only contain values from 0 to 255
+If you add 1 to 255 you get 0
+If you subtract 1 from 0 you get 255
+Use this knowledge to improve your solution

@@ -1,0 +1,37 @@
+﻿ex Tutorial 
+	How to use functions
+	How to use function parameters
+
+Basic
+	Set a cell to value
+	Move
+	Clone
+	Set cells 1-5 to high value
+
+Math
+	Add
+	Sub
+	
+	Mul a number by 2
+	Mul
+	Square a number
+
+	Div
+	Mod
+
+Navigation
+	if 0
+	switch
+	Search for 255
+	Search for n?
+	Relative offset
+	Relative offset and come back
+
+
+Ascii
+	Reverce a String
+	Hail Satan
+	ascii to num
+	num to ascii
+	Check if word
+	

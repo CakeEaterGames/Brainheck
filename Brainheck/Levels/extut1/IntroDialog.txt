@@ -1,0 +1,7 @@
+﻿It is annoying to write large amount of repeating commands
+That's why we added some shortcuts
+Instead of writing +++++ you can write 5+
+If you put a number before the command it repeats it by whatever amount you put
+if you want to repeate a group of commands use ()
+5(+- ) is the same as +- +- +- +- +-
+Your task is

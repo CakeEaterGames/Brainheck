@@ -15,8 +15,9 @@ namespace Brainheck
         public static bool ToClear = true;
         public static void Dialog(string[] lines)
         {
-            foreach (var l in lines)
+            foreach (var line in lines)
             {
+                var l=line.Replace("\\n","\n");
                 if (ToClear) Console.Clear();
                 Console.ForegroundColor = ConsoleColor.White;
                 foreach (var c in l)
@@ -44,12 +45,28 @@ namespace Brainheck
             Dialog(lib.ResText(fileName).Replace("\r","").Split('\n'));
         }
 
+        public static void BeepTest()
+        {
+            while (true)
+            {
+                var d = int.Parse(Console.ReadLine());
+                int step = 100;
+                for (int i = 0; i < 30; i++)
+                {
+                    Console.Beep(d + step * i, 10);
+                    Thread.Sleep(10);
+                }
+               
+             
+
+            }
+        }
+
         public static void LevelSelectScreen()
         {
             while (true)
             {
                 Console.Clear();
-
 
                 LevelGroup("Getting started");
                 LevelTitle(LevelName.Intro);
@@ -58,14 +75,20 @@ namespace Brainheck
                 LevelTitle(LevelName.tut3);
                 LevelTitle(LevelName.tut4);
 
-                LevelGroup("Extra tutorials");
+                if (LevelUtils.IsUnlocked(LevelName.extut1))
+                {
+                    LevelGroup("Extra tutorials");
+                }
                 LevelTitle(LevelName.extut1);
                 LevelTitle(LevelName.extut2);
                 LevelTitle(LevelName.extut3);
-                LevelTitle(LevelName.extut4);
+               
 
-                LevelGroup("Basics");
-                LevelTitle(LevelName.MoveCell);
+                if (LevelUtils.IsUnlocked(LevelName.Move))
+                {
+                    LevelGroup("Basics");
+                }
+                LevelTitle(LevelName.Move);
 
                 Console.WriteLine();
                 LevelSelectPrompt();
@@ -110,6 +133,7 @@ namespace Brainheck
                     SaveData.GetBool(name.ToString() + LevelStat.IsSolved.ToString()),
                     SaveData.GetBool(name.ToString() + LevelStat.IsFast.ToString()),
                     SaveData.GetBool(name.ToString() + LevelStat.IsSmall.ToString()),
+                    SaveData.GetBool(name.ToString() + LevelStat.IsMemory.ToString()),
                     s.Id,
                     s.Color
                 );
@@ -117,7 +141,7 @@ namespace Brainheck
         }
 
 
-        public static void LevelTitle(string name,bool isDone, bool isFast, bool isShort, string code ,ConsoleColor color = ConsoleColor.White)
+        public static void LevelTitle(string name,bool isDone, bool isFast, bool isShort, bool isMemory, string code ,ConsoleColor color = ConsoleColor.White)
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("   [");
@@ -139,8 +163,18 @@ namespace Brainheck
                 Console.Write(" ");
             }
             Console.ForegroundColor = ConsoleColor.Yellow;
-            if (isFast) Console.Write(">");
-            if (isShort) Console.Write(">");
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            if (isFast) Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(">");
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            if (isShort) Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(">");
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            if (isMemory) Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(">");
 
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("] ");

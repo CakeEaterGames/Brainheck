@@ -1,5 +1,5 @@
 ﻿Tutirial 3
 Read 6 symbols from the input, add 6 to each one, send them all to the output
-18
-18
-6
+48
+22
+1

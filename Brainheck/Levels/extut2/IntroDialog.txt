@@ -1,0 +1,12 @@
+﻿Sometimes you need to use the same piece of code multiple times
+So instead copying and pasting create a function!
+Notice that you write all of your code insite the #main{} block
+You can create your own other block and use it inside your main block
+Like this
+#clear\n{\n   [-]\n}\n#main\n{\n   clear()+++>\n   clear()+++++>\n   clear()+>\n}
+This code is then transformed into [-]+++>[-]+++++>[-]+>
+And it clears cells 0 1 2 and sets their values to 3 5 1
+This is not the most useful example but it will be very helpful in more complex tasks
+Your task is:
+Ovewrite values in cells 4 5 6 by values from cells 0 1 2
+And use functions... but you don't have to

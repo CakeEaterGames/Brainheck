@@ -46,6 +46,7 @@
     <Compile Include="Brainfuck.cs" />
     <Compile Include="Compiler.cs" />
     <Compile Include="Level.cs" />
+    <Compile Include="LevelSelect.cs" />
     <Compile Include="LevelUtils.cs" />
     <Compile Include="lib.cs" />
     <Compile Include="Program.cs" />
@@ -81,6 +82,23 @@
     <EmbeddedResource Include="Levels\tut4\meta.txt" />
     <EmbeddedResource Include="Levels\tut4\SolvedDialog.txt" />
     <EmbeddedResource Include="Levels\tut4\tests.txt" />
+    <EmbeddedResource Include="Levels\extut1\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\extut1\meta.txt" />
+    <EmbeddedResource Include="Levels\extut1\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\extut1\tests.txt" />
+    <EmbeddedResource Include="Levels\Move\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\Move\meta.txt" />
+    <EmbeddedResource Include="Levels\Move\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\Move\tests.txt" />
+    <EmbeddedResource Include="Levels\extut2\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\extut2\meta.txt" />
+    <EmbeddedResource Include="Levels\extut2\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\extut2\tests.txt" />
+    <EmbeddedResource Include="Levels\extut3\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\extut3\meta.txt" />
+    <EmbeddedResource Include="Levels\extut3\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\extut3\tests.txt" />
+    <Content Include="Levels\Level ideas.txt" />
     <Content Include="Levels\_example\meta.txt" />
     <Content Include="Levels\_example\tests.txt" />
   </ItemGroup>
