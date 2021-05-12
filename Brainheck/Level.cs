@@ -41,7 +41,7 @@ namespace Brainheck
                 SolutionTest lt = new SolutionTest(r[0], r[1], r[2], r[3], r[4], r[5]);
                 Tests.Add(lt);
             }
-
+           
         }
 
         string EmptySolution = "#main\n{\n\n}";
@@ -324,7 +324,7 @@ namespace Brainheck
                 CodePointer = bf.PC;
 
                 //TODO: check if needed to rewrite
-                if (bf.Command == '+' || bf.Command == '-')
+                if (bf.Command == '+' || bf.Command == '-' || bf.Command == ',')
                 {
                     RewriteCell(MemoryPointer);
                 }
@@ -432,6 +432,7 @@ namespace Brainheck
             CurrentTest = index;
             Memory = new List<byte>(Tests[index].StartingTape);
             Input = new List<byte>(Tests[index].InputChars);
+            if(Tests[index].ToCheckEndOutput)
             ExpectedOutput = new List<byte>(Tests[index].OutputChars);
         }
         public string OptimiseSolution(string s)

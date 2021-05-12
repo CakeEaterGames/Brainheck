@@ -49,6 +49,7 @@
     <Compile Include="Level.cs" />
     <Compile Include="LevelSelect.cs" />
     <Compile Include="lib.cs" />
+    <Compile Include="Old generators.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Save.cs" />
@@ -98,7 +99,23 @@
     <EmbeddedResource Include="Levels\extut3\meta.txt" />
     <EmbeddedResource Include="Levels\extut3\SolvedDialog.txt" />
     <EmbeddedResource Include="Levels\extut3\tests.txt" />
+    <EmbeddedResource Include="Levels\Set5\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\Set5\meta.txt" />
+    <EmbeddedResource Include="Levels\Set5\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\Set5\tests.txt" />
+    <EmbeddedResource Include="Levels\AtoB2\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\AtoB2\meta.txt" />
+    <EmbeddedResource Include="Levels\AtoB2\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\AtoB2\tests.txt" />
     <Content Include="Levels\Level ideas.txt" />
+    <EmbeddedResource Include="Levels\Clone\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\Clone\meta.txt" />
+    <EmbeddedResource Include="Levels\Clone\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\Clone\tests.txt" />
+    <EmbeddedResource Include="Levels\AtoB\IntroDialog.txt" />
+    <EmbeddedResource Include="Levels\AtoB\meta.txt" />
+    <EmbeddedResource Include="Levels\AtoB\SolvedDialog.txt" />
+    <EmbeddedResource Include="Levels\AtoB\tests.txt" />
     <Content Include="Levels\_example\meta.txt" />
     <Content Include="Levels\_example\tests.txt" />
   </ItemGroup>

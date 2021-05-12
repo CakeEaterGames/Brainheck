@@ -1,5 +1,5 @@
 ﻿Tutirial 4
-Clear all cells on the strip. Note: There amount of the cells can be different!
+Clear all cells on the strip. Note: There amount of cells can be different!
 142
 6
 5

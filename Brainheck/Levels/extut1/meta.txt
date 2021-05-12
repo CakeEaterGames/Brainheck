@@ -1,5 +1,5 @@
 ﻿Repetitions
 Add 666 to the value in selected cell
-666
-58
+102
+29
 1

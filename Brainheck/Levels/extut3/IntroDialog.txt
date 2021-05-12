@@ -1,3 +1,5 @@
 ﻿Functions can also use arguments
-You might've been wondering why are there a pair of roud brackets after functions ()
-Here's a simple example 
+You might've been wondering why are there a pair of round brackets after functions ()
+Here's a simple example\n#func\n{\n	$0+ $1> $2- $1<\n}\n#main\n{\n	func(2,3,4)\n}\nAll $n are replaced by the nth value in the round brackets and the code becomes\n2+ 3> 4- 3<\nor\n++ >>> ---- <<<
+Your task is
+Create a function "move(a,b)" tham moves value from cell with index "a" to cell with index "b" 

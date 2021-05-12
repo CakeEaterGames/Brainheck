@@ -44,6 +44,15 @@ namespace Brainheck
                     LevelGroup("Basics");
                 }
                 LevelTitle(LevelName.Move);
+                LevelTitle(LevelName.Clone);
+                LevelTitle(LevelName.Set5);
+
+                if (IsUnlocked(LevelName.AtoB))
+                {
+                    LevelGroup("ASCII");
+                }
+                LevelTitle(LevelName.AtoB);
+                LevelTitle(LevelName.AtoB2);
 
                 Console.WriteLine();
                 LevelSelectPrompt();
@@ -115,8 +124,11 @@ namespace Brainheck
             {
                 Console.Write(" ");
             }
-            Console.ForegroundColor = ConsoleColor.Yellow;
 
+            if (isDone)
+            {
+
+         
             Console.ForegroundColor = ConsoleColor.DarkGray;
             if (isFast) Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write(">");
@@ -128,7 +140,7 @@ namespace Brainheck
             Console.ForegroundColor = ConsoleColor.DarkGray;
             if (isMemory) Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write(">");
-
+            }
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("] ");
 
@@ -192,7 +204,11 @@ namespace Brainheck
             LevelData.Add(LevelName.extut2, new LevelStruct(LevelName.extut2, "ext2", "Functions"));
             LevelData.Add(LevelName.extut3, new LevelStruct(LevelName.extut3, "ext3", "Arguments"));
 
-            LevelData.Add(LevelName.Move, new LevelStruct(LevelName.Move, "1", "Move"));
+            LevelData.Add(LevelName.Move, new LevelStruct(LevelName.Move, "b1", "Move"));
+            LevelData.Add(LevelName.Clone, new LevelStruct(LevelName.Clone, "b2", "Clone"));
+            LevelData.Add(LevelName.Set5, new LevelStruct(LevelName.Set5, "b3", "Set 5"));
+            LevelData.Add(LevelName.AtoB, new LevelStruct(LevelName.AtoB, "a1", "Ascii to Byte"));
+            LevelData.Add(LevelName.AtoB2, new LevelStruct(LevelName.AtoB2, "a12", "Ascii to Byte Extra",ConsoleColor.DarkYellow));
 
             foreach (var l in LevelData)
             {
@@ -210,12 +226,15 @@ namespace Brainheck
             UnlockConditions.Add(LevelName.tut4, new LevelName[] { LevelName.tut3 });
 
             UnlockConditions.Add(LevelName.extut1, new LevelName[] { LevelName.tut4 });
-            UnlockConditions.Add(LevelName.extut2, new LevelName[] { LevelName.extut1 });
-            UnlockConditions.Add(LevelName.extut3, new LevelName[] { LevelName.extut2 });
-            UnlockConditions.Add(LevelName.extut4, new LevelName[] { LevelName.extut3 });
-
+            UnlockConditions.Add(LevelName.extut2, new LevelName[] { LevelName.extut1, LevelName.Move });
+            UnlockConditions.Add(LevelName.extut3, new LevelName[] { LevelName.extut2, LevelName.Move });
 
             UnlockConditions.Add(LevelName.Move, new LevelName[] { LevelName.tut4 });
+            UnlockConditions.Add(LevelName.Clone, new LevelName[] { LevelName.tut4 });
+            UnlockConditions.Add(LevelName.Set5, new LevelName[] { LevelName.tut4 });
+
+            UnlockConditions.Add(LevelName.AtoB, new LevelName[] { LevelName.tut4 });
+            UnlockConditions.Add(LevelName.AtoB2, new LevelName[] { LevelName.AtoB });
 
         }
         public static bool IsUnlocked(LevelName lvl)
@@ -263,7 +282,10 @@ namespace Brainheck
         extut4,
 
         Move,
-
+        Clone,
+        Set5,
+        AtoB,
+        AtoB2,
     }
 
 

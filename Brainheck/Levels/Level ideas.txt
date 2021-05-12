@@ -1,12 +1,11 @@
 ﻿ex Tutorial 
-	How to use functions
-	How to use function parameters
++	How to use functions
++	How to use function parameters
 
 Basic
-	Set a cell to value
-	Move
-	Clone
-	Set cells 1-5 to high value
++	Move
++	Clone
++	Set cells 1-5 to high value
 
 Math
 	Add
@@ -23,6 +22,7 @@ Navigation
 	if 0
 	switch
 	Search for 255
+	Move number from i back to 0
 	Search for n?
 	Relative offset
 	Relative offset and come back
@@ -31,7 +31,7 @@ Navigation
 Ascii
 	Reverce a String
 	Hail Satan
-	ascii to num
++	ascii to num
 	num to ascii
 	Check if word
 	

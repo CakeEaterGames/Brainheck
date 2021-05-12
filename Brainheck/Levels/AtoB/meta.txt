@@ -1,0 +1,5 @@
+﻿Ascii to Byte
+Read all numbers from the input in ascii format, convert to numerical value and write to the output
+0
+0
+0

@@ -50,6 +50,14 @@ namespace Brainheck
         }
         public static void LoadFromFile()
         {
+            if (!File.Exists("save"))
+            {
+                StreamWriter sw = new StreamWriter("save");
+                sw.Write("");
+                sw.Flush();
+                sw.Close();
+            }
+
             Var = new Dictionary<string, string>();
             StreamReader sr = new StreamReader("save");
             var data = sr.ReadToEnd().Replace("\r", "").Split(';');

@@ -25,7 +25,7 @@ namespace Brainheck
         public string OutputString = "";
 
         public int StepCount = 0;
-        public int MaxStepCount = 10000;
+        public int MaxStepCount = 100000;
 
         HashSet<int> Visited = new HashSet<int>();
         public int UsedMemory { get { return Visited.Count; } }
